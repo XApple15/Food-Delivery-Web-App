@@ -15,14 +15,22 @@ namespace FoodDeliveryWebApp.Server.Repositories
 
         public async Task<Restaurant> Create(Restaurant restaurant)
         {
+            restaurant.Rating = "5";
             await _db.Restaurants.AddAsync(restaurant);
             await _db.SaveChangesAsync();
             return restaurant;
         }
 
-        public async Task<List<Restaurant>> GetAll()
+        public async Task<List<Restaurant>> GetAll(string? applicationUserId)
         {
-            return  await _db.Restaurants.ToListAsync();
+            if (string.IsNullOrEmpty(applicationUserId))
+            {
+                return await _db.Restaurants.ToListAsync();
+            }
+
+            return await _db.Restaurants
+                .Where(r => r.ApplicationUserId == applicationUserId)
+                .ToListAsync();
         }
 
         public async Task<Restaurant> GetByIdAsync(Guid id)
@@ -49,6 +57,18 @@ namespace FoodDeliveryWebApp.Server.Repositories
             
             await  _db.SaveChangesAsync();
             return existingRestaurant;
+        }
+
+        public async Task<Restaurant> DeleteAsync(Guid id)
+        {
+            var restaurant = await _db.Restaurants.FirstOrDefaultAsync(x => x.Id == id);
+            if (restaurant == null)
+            {
+                return null;
+            }
+            _db.Restaurants.Remove(restaurant);
+            await _db.SaveChangesAsync();
+            return restaurant;
         }
     }
 }

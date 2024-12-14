@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Button, Table, Form, InputGroup, Toast, Pagination } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,7 +8,7 @@ function AdminUserDashboard() {
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [showAddModal, setShowAddModal] = useState(false); // State for Add User modal
+    const [showAddModal, setShowAddModal] = useState(false);
     const [newUser, setNewUser] = useState({
         userName: "",
         email: "",
@@ -83,7 +83,6 @@ function AdminUserDashboard() {
         const { name, value } = e.target;
 
         if (name === "roles") {
-            // Ensure roles is handled as an array
             setNewUser({ ...newUser, [name]: [value] });
         } else {
             setNewUser({ ...newUser, [name]: value });
@@ -173,7 +172,7 @@ function AdminUserDashboard() {
                     <tr>
                         <th>ID</th>
                         <th onClick={() => handleSort("name")}>
-                            Username {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "?" : "?")}
+                            Username {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "▲" : "▼")}
                         </th>
                         <th>Email</th>
                         <th>Name</th>
@@ -224,7 +223,7 @@ function AdminUserDashboard() {
                 ))}
             </Pagination>
 
-            {/* Edit User Modal */}
+            {/* Edit User */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit User</Modal.Title>
@@ -306,7 +305,7 @@ function AdminUserDashboard() {
 
 
 
-            {/* Add User Modal */}
+            {/* Add User */}
             <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add New User</Modal.Title>

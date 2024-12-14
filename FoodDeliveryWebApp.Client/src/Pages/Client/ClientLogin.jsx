@@ -25,7 +25,6 @@ function Login() {
         if (loginPayload.email && loginPayload.password) { 
             try {
                 const result = await auth.loginAction(loginPayload);  
-                //console.log(loginPayload);
                 if (result === 200) {
                     navigate("/account");
                 } else {

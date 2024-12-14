@@ -26,9 +26,9 @@ namespace FoodDeliveryWebApp.Server.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? applicationUserId)
         {
-            var restaurants = await _restaurantRepository.GetAll();
+            var restaurants = await _restaurantRepository.GetAll(applicationUserId);
             var restaurantDTO = _mapper.Map<List<RestaurantDTO>>(restaurants);
             return Ok(restaurantDTO);
         }
@@ -60,7 +60,7 @@ namespace FoodDeliveryWebApp.Server.Controllers
 
         [HttpPut("{id}")]
         [ValidateModel]
-        public async Task<IActionResult> Update(Guid id, [FromBody] AddRestaurantDTO addRestaurantDTO)
+        public async Task<IActionResult> Update(Guid id, [FromBody] RestaurantDTO addRestaurantDTO)
         {
             var restaurantModel = _mapper.Map<Restaurant>(addRestaurantDTO);
             restaurantModel = await _restaurantRepository.Update(id, restaurantModel);
@@ -70,6 +70,19 @@ namespace FoodDeliveryWebApp.Server.Controllers
             }
 
             var restaurantDTO = _mapper.Map<RestaurantDTO>(restaurantModel);
+            return Ok(restaurantDTO);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var restaurant = await _restaurantRepository.DeleteAsync(id);
+            if (restaurant == null)
+            {
+                return NotFound();
+            }
+            
+            var restaurantDTO = _mapper.Map<RestaurantDTO>(restaurant);
             return Ok(restaurantDTO);
         }
     }

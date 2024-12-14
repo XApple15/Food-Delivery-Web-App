@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         checkTokenExpiration();
-        const interval = setInterval(checkTokenExpiration, 60000);// refreshing token expiration minute by minute 
+        const interval = setInterval(checkTokenExpiration, 60000);
         return () => clearInterval(interval);
     }, []);
 
@@ -51,7 +51,6 @@ export const AuthProvider = ({ children }) => {
                 password: data.password,
                 role : data.role
             };
-            console.log(loginPayload);
             await   axios
                 .post("https://localhost:7131/api/Auth/Login", loginPayload)
                 .then((response) => {
@@ -64,16 +63,8 @@ export const AuthProvider = ({ children }) => {
                     setRole(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
                    
                     setUserId(decoded.id);
-                    console.log(userId);
-
-                    setTimeout(() => {
-                        console.log(userId);  // Ensure userId state is updated
-                    
-                    }, 1000);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                     statusCode = response.status;
-
-                    
                 })
                 .catch((err) => {        
                     console.log(err);

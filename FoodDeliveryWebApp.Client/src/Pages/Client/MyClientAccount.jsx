@@ -26,19 +26,20 @@ function MyClientAccount() {
                     <div>
                         <p>Email: {userData?.email || "null"}</p>
                         <p>Roles: {userData?.roles?.join(", ") || "null"}</p>
-                                <div>
-                                    <h6>Users:</h6>
-                                    {users.length > 0 ? (
-                                        users.map((user) => (
-                                            <div key={user.id}>
-                                                <p><strong>ID:</strong> {user.id}</p> {/* Display the id */}
-                                                <p><strong>Name:</strong> {user.name || "No name provided"}</p> {/* Handle null name */}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No users found.</p>
-                                    )}
-                                </div>                            </div>
+                        <div>
+                            <h6>Users:</h6>
+                            {users.length > 0 ? (
+                                users.map((user) => (
+                                    <div key={user.id}>
+                                        <p><strong>ID:</strong> {user.id}</p>
+                                        <p><strong>Name:</strong> {user.name || "No name provided"}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No users found.</p>
+                            )}
+                        </div>
+                    </div>
                 )}
             </div>
         )

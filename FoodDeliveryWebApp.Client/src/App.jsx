@@ -3,9 +3,9 @@ import NavBar from "./Components/NavBar";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import ClientLogin from "./Pages/Client/ClientLogin";
-import AllRestaurants from "./Pages/AllRestaurants";
-import RestaurantMenu from "./Pages/RestaurantMenu";
-import RestaurantProduct from "./Pages/RestaurantProduct";
+import AllRestaurants from "./Pages/Restaurant/AllRestaurants";
+import RestaurantMenu from "./Pages/Restaurant/RestaurantMenu";
+import RestaurantProduct from "./Pages/Restaurant/RestaurantProduct";
 import ProductDetails from "./Pages/ProductDetails";
 import NotFound from "./Pages/NotFound";
 import Register from "./Pages/Client/Register";
@@ -15,10 +15,10 @@ import PrivateRoute from "./Context/PrivateRoute";
 import AdminLogin from "./Pages/Admin/AdminLogin";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import ImageUpload from "./Pages/ImageUpload";
-import RestaurantLogin from "./Pages/Restaurant/RestaurantLogin";
-import RestaurantUserDashboard from "./Pages/Restaurant/RestaurantUserDashboard";
-import RestaurantDashboard from "./Pages/Restaurant/RestaurantDashboard";
-
+import RestaurantLogin from "./Pages/Restaurant/ManageRestaurant/RestaurantLogin";
+import RestaurantDashboard from "./Pages/Restaurant/ManageRestaurant/RestaurantDashboard";
+import AdminUserDashboard from "./Pages/Admin/AdminUserDashboard";
+import AdminRestaurantDashboard from "./Pages/Admin/AdminRestaurantDashboard";
 function App() {
     return (
         <Router>
@@ -44,6 +44,7 @@ function App() {
                     <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
                         <Route path="/admin/dashboard" element={<AdminDashboard />} />
                         <Route path="/admin/dashboard/users" element={<AdminUserDashboard />} />
+                        <Route path="/admin/dashboard/restaurants" element={<AdminRestaurantDashboard />} />
                     </Route>
 
                     <Route element={<PrivateRoute allowedRoles={['Client']} />}>

@@ -1,9 +1,9 @@
-
+﻿
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect, useContext } from 'react';
-import { CartContext } from '../Context/cart.jsx';
-import Cart from '../Components/Cart.jsx';
+import { CartContext } from '../../Context/cart.jsx';
+import Cart from '../../Components/Cart.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 //import truncateString from "../Utilities/TruncateString"; 
 // not using anymore product description on all products page
@@ -40,7 +40,7 @@ function AllRestaurants() {
 
                     <div
                         className="card"
-                        style={{ width: "50vw", height: "200px" }} // Fixed width and height
+                        style={{ width: "50vw", height: "200px" }} 
                         onClick={() => handleClick(restaurant)}
                     >
                         <div className="row g-0 h-100">
@@ -49,15 +49,28 @@ function AllRestaurants() {
                                     src={restaurant.imageUrl}
                                     className="img-fluid rounded-start h-100"
                                     alt={restaurant.name}
-                                    style={{ objectFit: "cover" }} // Ensures image fits properly
+                                    style={{ objectFit: "cover" }} 
                                 />
                             </div>
                             <div className="col-md-8 d-flex align-items-center">
                                 <div className="card-body">
-                                    <h5 className="card-title">{restaurant.name}</h5>
+                                    <h5 className="card-title">
+                                        {restaurant.name}
+                                        &nbsp;
+                                        &nbsp;
+                                        &nbsp;
+                                        {restaurant.rating }
+                                        <span
+                                            
+                                            className={"text-warning"}
+                                            style={{ fontSize: "24px", marginRight: "5px" }}
+                                        >
+                                            ★
+                                        </span>
+                                    </h5>
                                     <p className="card-text">{restaurant.description}</p>
                                     <p className="card-text">
-                                        <small className="text-body-secondary">{restaurant.rating}</small>
+                                        <small className="text-body-secondary">{restaurant.address}</small>
                                     </p>
                                 </div>
                             </div>

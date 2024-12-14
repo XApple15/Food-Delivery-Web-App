@@ -14,7 +14,6 @@ const ImageUpload = () => {
     const handleUpload = async (event) => {
         event.preventDefault();
 
-        // Validate input fields
         if (!file) {
             setUploadStatus('Please select a file.');
             return;
@@ -25,9 +24,9 @@ const ImageUpload = () => {
         }
 
         const formData = new FormData();
-        formData.append('File', file); // Matches "File" in the DTO
-        formData.append('FileName', fileName); // Matches "FileName" in the DTO
-        formData.append('FileDescription', fileDescription); // Matches "FileDescription" in the DTO
+        formData.append('File', file);
+        formData.append('FileName', fileName); 
+        formData.append('FileDescription', fileDescription); 
 
         try {
             const response = await axios.post('https://localhost:7131/api/images/upload', formData, {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { CartContext } from '../Context/cart.jsx';
-import Cart from '../Components/Cart.jsx';
+import { CartContext } from '../../Context/cart.jsx';
+import Cart from '../../Components/Cart.jsx';
 
 function RestaurantProduct() {
     const { id } = useParams();

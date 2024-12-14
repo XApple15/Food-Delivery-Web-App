@@ -1,8 +1,8 @@
 import { useNavigate,useParams } from "react-router-dom";
 import axios from "axios";
 import { useState, useEffect, useContext } from 'react';
-import { CartContext } from '../Context/cart.jsx';
-import Cart from '../Components/Cart.jsx';
+import { CartContext } from '../../Context/cart.jsx';
+import Cart from '../../Components/Cart.jsx';
 
 //import truncateString from "../Utilities/TruncateString"; 
 // not using anymore product description on all products page
