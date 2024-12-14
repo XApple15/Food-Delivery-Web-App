@@ -1,9 +1,9 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Button, Table, Form, InputGroup, Toast, Pagination } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function AdminDashboard() {
+function AdminUserDashboard() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -17,7 +17,7 @@ function AdminDashboard() {
         phoneNumber: "",
         address: "",
         roles: ["Client"]
-        
+
     });
     const [searchQuery, setSearchQuery] = useState("");
     const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
@@ -100,12 +100,12 @@ function AdminDashboard() {
             setNewUser({
                 userName: "",
                 email: "",
-                password:"",
+                password: "",
                 name: "",
                 phoneNumber: "",
                 address: "",
                 roles: ["Client"]
-                
+
             });
         } catch (err) {
             console.error("Failed to add new user", err);
@@ -173,7 +173,7 @@ function AdminDashboard() {
                     <tr>
                         <th>ID</th>
                         <th onClick={() => handleSort("name")}>
-                            Username {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "▲" : "▼")}
+                            Username {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "?" : "?")}
                         </th>
                         <th>Email</th>
                         <th>Name</th>
@@ -381,7 +381,7 @@ function AdminDashboard() {
                                 <option value="Restaurant">Restaurant</option>
                             </Form.Select>
                         </Form.Group>
-                        
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -406,4 +406,4 @@ function AdminDashboard() {
     );
 }
 
-export default AdminDashboard;
+export default AdminUserDashboard;

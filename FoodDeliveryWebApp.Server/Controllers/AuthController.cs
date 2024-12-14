@@ -37,7 +37,7 @@ namespace FoodDeliveryWebApp.API.Controllers
                 //add roles to this user
                 if (registerRequestDTO.Roles != null && registerRequestDTO.Roles.Any())
                 {
-                    identityResult = await _userManager.AddToRolesAsync(identityUser,["Client"]);
+                    identityResult = await _userManager.AddToRolesAsync(identityUser,registerRequestDTO.Roles);
                     if (identityResult.Succeeded)
                     {
                         return Ok("User created successfully");

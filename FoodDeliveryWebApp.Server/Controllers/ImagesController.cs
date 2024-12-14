@@ -46,7 +46,7 @@ namespace FoodDeliveryWebApp.API.Controllers
                 ModelState.AddModelError("file", "Unsupported file extention");
                 throw new Exception("Invalid file extension");
             }
-           if( request.File.Length > 10 * 1024)
+           if( request.File.Length > 10 * 1024 * 1024)
             {
                 ModelState.AddModelError("file", "File size is too big");
             }

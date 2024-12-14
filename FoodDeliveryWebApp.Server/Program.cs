@@ -11,6 +11,7 @@ using FoodDeliveryWebApp.API.Models.Domain;
 using FoodDeliveryWebApp.API.Repositories;
 using Serilog;
 using System.Text;
+using FoodDeliveryWebApp.Server.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("WarehouseConnStr
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 builder.Services.AddScoped<IApplicationUserRepository, SQLApplicationUserRepository>();
+builder.Services.AddScoped<IRestaurantRepository, SQLRestaurantRepository>();
+builder.Services.AddScoped<IRestaurantMenuRepository, SQLRestaurantMenuRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfilescs));
 

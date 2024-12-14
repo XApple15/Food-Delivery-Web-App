@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("token") || "");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -22,7 +22,9 @@ export const AuthProvider = ({ children }) => {
                 const decoded = decodeJwt(token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 setUser(decoded);
+                setUserId(decoded.id);
                 setRole(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+                console.log(user);
             }
         }
         setLoading(false);
@@ -57,10 +59,21 @@ export const AuthProvider = ({ children }) => {
                     localStorage.setItem("token", token);
                     setToken(token);
                     const decoded = decodeJwt(token);
-                    setUser(decoded);
+                    setUser(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims"]);
+
                     setRole(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+                   
+                    setUserId(decoded.id);
+                    console.log(userId);
+
+                    setTimeout(() => {
+                        console.log(userId);  // Ensure userId state is updated
+                    
+                    }, 1000);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                     statusCode = response.status;
+
+                    
                 })
                 .catch((err) => {        
                     console.log(err);
@@ -80,11 +93,14 @@ export const AuthProvider = ({ children }) => {
         delete axios.defaults.headers.common["Authorization"];
         setUser(null);
         setRole(null);
+        setUserId(null);
         navigate('/');
     };
 
+    
+
     return (
-        <AuthContext.Provider value={{ token,user, loginAction, logout,role }}>
+        <AuthContext.Provider value={{ token,user, loginAction, logout,role ,userId}}>
             {children}
         </AuthContext.Provider>
     );

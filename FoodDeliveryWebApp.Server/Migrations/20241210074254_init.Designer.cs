@@ -4,6 +4,7 @@ using FoodDeliveryWebApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodDeliveryWebApp.Server.Migrations
 {
     [DbContext(typeof(WarehouseDButils))]
-    partial class WarehouseDButilsModelSnapshot : ModelSnapshot
+    [Migration("20241210074254_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,10 +212,6 @@ namespace FoodDeliveryWebApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -232,8 +231,6 @@ namespace FoodDeliveryWebApp.Server.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Restaurants");
                 });
@@ -475,17 +472,6 @@ namespace FoodDeliveryWebApp.Server.Migrations
                     b.Navigation("OrderModel");
 
                     b.Navigation("RestaurantMenuModel");
-                });
-
-            modelBuilder.Entity("FoodDeliveryWebApp.Server.Models.Domain.Restaurant", b =>
-                {
-                    b.HasOne("FoodDeliveryWebApp.API.Models.Domain.ApplicationUser", "ApplicationUserModel")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUserModel");
                 });
 
             modelBuilder.Entity("FoodDeliveryWebApp.Server.Models.Domain.RestaurantMenu", b =>

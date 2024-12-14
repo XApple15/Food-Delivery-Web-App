@@ -16,7 +16,9 @@ namespace FoodDeliveryWebApp.API.Data
         public DbSet<Orders> Orders { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        
+        public DbSet<OrderDetails> OrderDetails { get; set; }
+        public DbSet<Restaurant> Restaurants { get; set; }
+        public DbSet<RestaurantMenu> RestaurantMenus { get; set; }
 
 
 
@@ -58,6 +60,32 @@ namespace FoodDeliveryWebApp.API.Data
                 }
             };
             modelBuilder.Entity<IdentityRole>().HasData(roles);
+
+
+            
+
+            modelBuilder.Entity<Orders>()
+                .HasOne(o => o.UserModel)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+
+            modelBuilder.Entity<Orders>()
+                .HasOne(o => o.RestaurantModel)
+                .WithMany()
+                .HasForeignKey(o => o.RestaurantId)
+                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+
+            // If you decide to add CourierModel navigation property
+            modelBuilder.Entity<Orders>()
+                .HasOne(o => o.CourierModel)
+                .WithMany()
+                .HasForeignKey(o => o.CourierId)
+                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+            modelBuilder.Entity<Restaurant>()
+                .HasOne(o => o.ApplicationUserModel)
+                .WithMany()
+                .HasForeignKey(o => o.ApplicationUserId);
     }
     }
 

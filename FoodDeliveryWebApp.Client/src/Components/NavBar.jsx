@@ -65,7 +65,7 @@ function NavBar() {
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
 
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/allproducts">All Products</NavLink>
+                                <NavLink className="nav-link" to="/allrestaurants">All Products</NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/about">About</NavLink>

@@ -18,6 +18,12 @@ namespace FoodDeliveryWebApp.API.Repositories
             var claims = new List<Claim>();
 
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
+
+            if (user.Id != null) // Assuming user.Id is the unique identifier
+            {
+                claims.Add(new Claim("id", user.Id));
+            }
+
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
@@ -30,7 +36,7 @@ namespace FoodDeliveryWebApp.API.Repositories
                 _config["Jwt:Issuer"],
                 _config["Jwt:Audience"],
                 claims,
-                expires:DateTime.Now.AddMinutes(2),
+                expires:DateTime.Now.AddMinutes(15),
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token); 
         }
