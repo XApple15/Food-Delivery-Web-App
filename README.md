@@ -1,6 +1,6 @@
 # Food Delivery App
 ## Overview
-Food Delivery App is a full-stack web application that provides an end-to-end shopping experience, built with a secure and modern tech stack.</br>
+Food Delivery App is a full-stack web application that provides an end-to-end food shopping experience, built with a secure and modern tech stack.</br>
 The project incorporates a **React.js** front-end and a **C#** back-end API with **user type JWT-based authentication**, ensuring secure user login, session handling, and role-based access control.</br>
 The application enables users to perform CRUD operations on products and manage their shopping cart seamlessly through REST APIs. This project emphasizes secure coding practices and includes security features like token authentication, and protection against common web vulnerabilities.</br>
 
