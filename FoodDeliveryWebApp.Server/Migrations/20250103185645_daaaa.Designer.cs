@@ -4,6 +4,7 @@ using FoodDeliveryWebApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodDeliveryWebApp.Server.Migrations
 {
     [DbContext(typeof(WarehouseDButils))]
-    partial class WarehouseDButilsModelSnapshot : ModelSnapshot
+    [Migration("20250103185645_daaaa")]
+    partial class daaaa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -467,7 +470,7 @@ namespace FoodDeliveryWebApp.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("FoodDeliveryWebApp.Server.Models.Domain.RestaurantMenu", "RestaurantMenuModel")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("RestaurantMenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -551,6 +554,11 @@ namespace FoodDeliveryWebApp.Server.Migrations
                 });
 
             modelBuilder.Entity("FoodDeliveryWebApp.API.Models.Domain.Orders", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("FoodDeliveryWebApp.Server.Models.Domain.RestaurantMenu", b =>
                 {
                     b.Navigation("OrderDetails");
                 });

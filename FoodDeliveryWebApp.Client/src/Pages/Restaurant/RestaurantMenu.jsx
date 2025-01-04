@@ -19,14 +19,17 @@ function RestaurantMenu() {
     };
 
     useEffect(() => {
+        console.log(restaurant_id);
+        const actualId = restaurant_id.includes("=") ? restaurant_id.split("=")[1] : restaurant_id;
+
         axios
-            .get(`https://localhost:7131/api/restaurantmenu?restaurant_id=${restaurant_id}`)
+            .get(`https://localhost:7131/api/restaurantmenu?restaurantid=${actualId}`)
             .then((response) => {
+                console.log(response.data);
                 setMenus(response.data);
             })
             .catch((err) => console.log(err));
-    },
-        []);
+    }, [restaurant_id]);
 
     const handleClick = (menu) => {
         navigate(`/restaurantproduct/${menu.id}`);
@@ -39,9 +42,9 @@ function RestaurantMenu() {
 
                     <div key={menu.id} className="col">
                         <div className="card h-100">
-                            <img src={menu.productImageURL} className="card-img-top" width="200" height="300" onClick={() => handleClick(menu)} />
+                            <img src={menu.imageUrl} className="card-img-top" width="200" height="300" onClick={() => handleClick(menu)} />
                             <div key={menu.id} className="card-body" onClick={() => handleClick(menu)}>
-                                <h5 className="card-title">{menu.name}</h5>
+                                <h5 className="card-title">{menu.productName}</h5>
                             </div>
                             <button className="btn btn-primary btn-lg" style={{ marginLeft: "60px", marginRight: "60px", marginBottom: "15px" }}
                                 onClick={() => { addToCart(menu) }}>

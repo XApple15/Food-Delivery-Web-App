@@ -46,7 +46,7 @@ namespace FoodDeliveryWebApp.Server.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public async Task<IActionResult> Create([FromBody] RestaurantMenuDTO restaurantMenuDTO)
+        public async Task<IActionResult> Create([FromBody] AddRestaurantMenuDTO restaurantMenuDTO)
         {
             var restaurantMenu = _mapper.Map<RestaurantMenu>(restaurantMenuDTO);
             await _restaurantMenuRepository.Create(restaurantMenu);

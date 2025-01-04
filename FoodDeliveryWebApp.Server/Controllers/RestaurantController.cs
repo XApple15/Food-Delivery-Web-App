@@ -5,6 +5,7 @@ using FoodDeliveryWebApp.Server.Models.Domain;
 using FoodDeliveryWebApp.Server.Models.DTO;
 using FoodDeliveryWebApp.Server.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
 namespace FoodDeliveryWebApp.Server.Controllers
@@ -29,7 +30,7 @@ namespace FoodDeliveryWebApp.Server.Controllers
         public async Task<IActionResult> GetAll([FromQuery] string? applicationUserId)
         {
             var restaurants = await _restaurantRepository.GetAll(applicationUserId);
-            var restaurantDTO = _mapper.Map<List<RestaurantDTO>>(restaurants);
+            var restaurantDTO = _mapper.Map<IEnumerable<RestaurantDTO>>(restaurants);
             return Ok(restaurantDTO);
         }
 

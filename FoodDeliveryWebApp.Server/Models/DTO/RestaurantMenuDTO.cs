@@ -1,4 +1,6 @@
-﻿namespace FoodDeliveryWebApp.Server.Models.DTO
+﻿using FoodDeliveryWebApp.Server.Models.Domain;
+
+namespace FoodDeliveryWebApp.Server.Models.DTO
 {
     public class RestaurantMenuDTO
     {
@@ -8,5 +10,7 @@
         public double Price { get; set; }
         public string? ImageUrl { get; set; }
         public Guid RestaurantId { get; set; }
+
+        public ICollection<OrderDetails> OrderDetails { get; set; }
     }
 }

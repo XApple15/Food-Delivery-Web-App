@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodDeliveryWebApp.Server.Migrations
 {
     [DbContext(typeof(WarehouseDButils))]
-    [Migration("20241214090725_added string rating")]
-    partial class addedstringrating
+    [Migration("20250103182936_daaa")]
+    partial class daaa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -140,8 +140,11 @@ namespace FoodDeliveryWebApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CourierId")
+                    b.Property<string>("Address")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CourierId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("OrderDate")
@@ -181,9 +184,6 @@ namespace FoodDeliveryWebApp.Server.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OrderModelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -195,7 +195,7 @@ namespace FoodDeliveryWebApp.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderModelId");
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("RestaurantMenuId");
 
@@ -440,8 +440,7 @@ namespace FoodDeliveryWebApp.Server.Migrations
                     b.HasOne("FoodDeliveryWebApp.API.Models.Domain.ApplicationUser", "CourierModel")
                         .WithMany()
                         .HasForeignKey("CourierId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("FoodDeliveryWebApp.Server.Models.Domain.Restaurant", "RestaurantModel")
                         .WithMany()
@@ -465,13 +464,13 @@ namespace FoodDeliveryWebApp.Server.Migrations
             modelBuilder.Entity("FoodDeliveryWebApp.Server.Models.Domain.OrderDetails", b =>
                 {
                     b.HasOne("FoodDeliveryWebApp.API.Models.Domain.Orders", "OrderModel")
-                        .WithMany()
-                        .HasForeignKey("OrderModelId")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FoodDeliveryWebApp.Server.Models.Domain.RestaurantMenu", "RestaurantMenuModel")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("RestaurantMenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -552,6 +551,16 @@ namespace FoodDeliveryWebApp.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FoodDeliveryWebApp.API.Models.Domain.Orders", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("FoodDeliveryWebApp.Server.Models.Domain.RestaurantMenu", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

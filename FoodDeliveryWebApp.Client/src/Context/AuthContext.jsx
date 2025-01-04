@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
                     localStorage.setItem("token", token);
                     setToken(token);
                     const decoded = decodeJwt(token);
+                    console.log(decoded);
                     setUser(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims"]);
 
                     setRole(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);

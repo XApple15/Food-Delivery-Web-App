@@ -1,9 +1,9 @@
 ﻿using FoodDeliveryWebApp.API.Models.Domain;
-using System.Text.Json.Serialization;
+using FoodDeliveryWebApp.Server.Models.Domain;
 
-namespace FoodDeliveryWebApp.Server.Models.Domain
+namespace FoodDeliveryWebApp.Server.Models.DTO
 {
-    public class OrderDetails
+    public class OrderDetailsDTO
     {
         public Guid Id { get; set; }
         public int Quantity { get; set; }
@@ -14,9 +14,9 @@ namespace FoodDeliveryWebApp.Server.Models.Domain
         public Guid RestaurantMenuId { get; set; }
 
 
-        [JsonIgnore]
         public Orders OrderModel { get; set; }
-        [JsonIgnore]
         public RestaurantMenu RestaurantMenuModel { get; set; }
+
+
     }
 }

@@ -12,9 +12,11 @@ using FoodDeliveryWebApp.API.Repositories;
 using Serilog;
 using System.Text;
 using FoodDeliveryWebApp.Server.Repositories;
+using FoodDeliveryWebApp.Server.Controllers;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 
 builder.Services.AddCors(options =>
@@ -22,13 +24,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("https://localhost:5173")
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials();
         });
 });
 
-// Add services to the container.
 var logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("Logs/WarehouseAPI_log.txt", rollingInterval: RollingInterval.Minute)
@@ -44,6 +46,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -84,12 +88,14 @@ builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 builder.Services.AddScoped<IApplicationUserRepository, SQLApplicationUserRepository>();
 builder.Services.AddScoped<IRestaurantRepository, SQLRestaurantRepository>();
 builder.Services.AddScoped<IRestaurantMenuRepository, SQLRestaurantMenuRepository>();
+builder.Services.AddScoped<IOrdersRepository, SQLOrdersRepository>();
+builder.Services.AddScoped<IOrderDetailsRepository, SQLOrderDetailsRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfilescs));
 
 builder.Services.AddIdentityCore<ApplicationUser>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<WarehouseDButils>()  // Uses the single, consolidated DbContext
+    .AddEntityFrameworkStores<WarehouseDButils>()  
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -111,6 +117,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).
     });
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
+
+app.UseRouting();
+app.MapControllers();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

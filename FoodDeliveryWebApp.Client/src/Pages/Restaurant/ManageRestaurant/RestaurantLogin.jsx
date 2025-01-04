@@ -8,7 +8,7 @@ import { useAuth } from '../../../Context/AuthContext';
 function RestaurantLogin() {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [email, setEmail] = useState("ursu@gmai.com");
+    const [email, setEmail] = useState("ursu@gmail.com");
     const [password, setPassword] = useState("String1!");
     const [error, setError] = useState("");
     const auth = useAuth();

@@ -1,8 +1,9 @@
-﻿using FoodDeliveryWebApp.Server.Models.Domain;
+﻿using FoodDeliveryWebApp.API.Models.Domain;
+using FoodDeliveryWebApp.Server.Models.Domain;
 
-namespace FoodDeliveryWebApp.API.Models.Domain
+namespace FoodDeliveryWebApp.Server.Models.DTO
 {
-    public class Orders
+    public class OrderDTO
     {
         public Guid Id { get; set; }
         public DateTime OrderDate { get; set; }
@@ -14,12 +15,12 @@ namespace FoodDeliveryWebApp.API.Models.Domain
         public Guid RestaurantId { get; set; }
         public string? CourierId { get; set; }
 
-        
         public ApplicationUser UserModel { get; set; }
         public Restaurant RestaurantModel { get; set; }
         public ApplicationUser? CourierModel { get; set; }
 
 
-        public ICollection<OrderDetails> OrderDetails { get; set; }
+        public List<OrderDetailsDTO> OrderDetails { get; set; }
+
     }
 }

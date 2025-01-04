@@ -19,11 +19,16 @@ import RestaurantLogin from "./Pages/Restaurant/ManageRestaurant/RestaurantLogin
 import RestaurantDashboard from "./Pages/Restaurant/ManageRestaurant/RestaurantDashboard";
 import AdminUserDashboard from "./Pages/Admin/AdminUserDashboard";
 import AdminRestaurantDashboard from "./Pages/Admin/AdminRestaurantDashboard";
+import CheckOutPage from "./Pages/Client/CheckOutPage";
+
+
 function App() {
     return (
         <Router>
             <AuthProvider>      
-                <NavBar  />
+                <NavBar />
+                <br />
+                <br />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
@@ -41,6 +46,8 @@ function App() {
                         <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} /> 
                     </Route>
 
+                    
+
                     <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
                         <Route path="/admin/dashboard" element={<AdminDashboard />} />
                         <Route path="/admin/dashboard/users" element={<AdminUserDashboard />} />
@@ -49,10 +56,15 @@ function App() {
 
                     <Route element={<PrivateRoute allowedRoles={['Client']} />}>
                         <Route path="/account" element={<MyClientAccount />} />
+                        <Route path="/check-out" element={<CheckOutPage />} />
                     </Route>
                    
                     <Route path="*" element={<NotFound />} />
                 </Routes>
+                <br />
+                <br />
+                <br />
+                <br />
             </AuthProvider>
         </Router>    
     );

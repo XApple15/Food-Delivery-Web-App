@@ -1,10 +1,17 @@
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
+import { useNavigate } from "react-router-dom"
 import { CartContext } from '../Context/cart.jsx'
 import './Cart.css' 
 
 export default function Cart({ showModal, toggle }) {
     const { cartItems, addToCart, removeFromCart, clearCart, getCartTotal } = useContext(CartContext)
+    const navigate = useNavigate();
+
+    const navigateToCheckOut = () => {
+        toggle();
+        navigate('/check-out');
+    };
 
     return (
         showModal && (
@@ -17,10 +24,10 @@ export default function Cart({ showModal, toggle }) {
                     {cartItems.map((item) => (
                         <div className="cart-item" key={item.id}>
                             <div className="cart-item-info">
-                                <img src={item.thumbnail} alt={item.title} className="cart-item-image" />
+                                <img src={item.imageUrl} alt={item.title} className="cart-item-image" />
                                 <div>
-                                    <h2 className="item-title">{item.title}</h2>
-                                    <p className="item-price">${item.price}</p>
+                                    <h2 className="item-title">{item.productName}</h2>
+                                    <p className="item-price">Ron {item.price}</p>
                                 </div>
                             </div>
                             <div className="cart-item-controls">
@@ -35,7 +42,9 @@ export default function Cart({ showModal, toggle }) {
                     <div className="cart-total">
                         <h2>Total: ${getCartTotal()}</h2>
                         <button onClick={clearCart}>Clear cart</button>
+                        <button onClick={navigateToCheckOut} type="button">Check-out</button>
                     </div>
+
                 ) : (
                     <h2 className="empty-cart">Your cart is empty</h2>
                 )}

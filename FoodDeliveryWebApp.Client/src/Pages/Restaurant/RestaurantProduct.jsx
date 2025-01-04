@@ -40,12 +40,12 @@ function RestaurantProduct() {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-md-6">
-                    <img src={product.productImageURL} alt={product.name} className="img-fluid rounded" />
+                    <img src={product.imageUrl} alt={product.name} className="img-fluid rounded" />
                 </div>
                 <div className="col-md-6">
-                    <h1 className="display-4">{product.name}</h1>
-                    <p className="lead">{product.description}</p>
-                    <h4 className="text-success">${product.price}</h4>
+                    <h1 className="display-4">{product.productName}</h1>
+                    {/*<p className="lead">{product.description}</p>*/}
+                    <h4 className="text-success">RON {product.price}</h4>
                     <div className="mt-4">
                         <button className="btn btn-primary btn-lg" onClick={() => { addToCart(product) }}>
                             Add to Cart
@@ -57,7 +57,7 @@ function RestaurantProduct() {
                 <div className="col">
                     <h4>Product Details</h4>
                     <ul className="list-group">
-                        <li className="list-group-item">Color: {product.price}</li>
+                        <li className="list-group-item">{product.description}</li>
                     </ul>
                 </div>
             </div>

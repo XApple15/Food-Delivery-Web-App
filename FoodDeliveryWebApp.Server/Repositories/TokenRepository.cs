@@ -19,7 +19,7 @@ namespace FoodDeliveryWebApp.API.Repositories
 
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
-            if (user.Id != null) // Assuming user.Id is the unique identifier
+            if (user.Id != null)
             {
                 claims.Add(new Claim("id", user.Id));
             }

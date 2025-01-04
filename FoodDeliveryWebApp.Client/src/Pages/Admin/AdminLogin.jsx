@@ -8,7 +8,7 @@ import { useAuth } from '../../Context/AuthContext';
 function AdminLogin() {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [userName, setUserName] = useState("user1@example.com");
+    const [userName, setUserName] = useState("user@example.com");
     const [password, setPassword] = useState("String1!");
     const [error, setError] = useState("");
     const auth = useAuth();

@@ -12,15 +12,13 @@ namespace FoodDeliveryWebApp.API.Data
         public WarehouseDButils(DbContextOptions<WarehouseDButils> options) : base(options)
         {
         }
-       
+
         public DbSet<Orders> Orders { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<RestaurantMenu> RestaurantMenus { get; set; }
-
-
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,10 +60,8 @@ namespace FoodDeliveryWebApp.API.Data
             modelBuilder.Entity<IdentityRole>().HasData(roles);
 
 
-            
-
             modelBuilder.Entity<Orders>()
-                .HasOne(o => o.UserModel)
+                .HasOne(o => o.UserModel)       
                 .WithMany()
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
@@ -81,12 +77,20 @@ namespace FoodDeliveryWebApp.API.Data
                 .HasOne(o => o.CourierModel)
                 .WithMany()
                 .HasForeignKey(o => o.CourierId)
+                .IsRequired(false) // Make the relationship optional
                 .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
             modelBuilder.Entity<Restaurant>()
                 .HasOne(o => o.ApplicationUserModel)
                 .WithMany()
                 .HasForeignKey(o => o.ApplicationUserId);
+            modelBuilder.Entity<OrderDetails>()
+                .HasOne(od => od.OrderModel)   // Navigation property
+                .WithMany(o => o.OrderDetails) // Assume Orders has a collection of OrderDetails
+                .HasForeignKey(od => od.OrderId); // Explicit FK
+            modelBuilder.Entity<OrderDetails>()
+                .HasOne(od=> od.RestaurantMenuModel)
+                .WithMany()
+                .HasForeignKey(od => od.RestaurantMenuId);
+        }
     }
-    }
-
 }
