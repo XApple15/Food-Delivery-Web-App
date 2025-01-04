@@ -4,7 +4,7 @@
 
 **Food Delivery App** is a full-stack web application designed to provide a seamless and secure platform for food delivery services. The app caters to four user roles: **Admin**, **Client**, **Restaurant**, and **Courier**.  
 
-Built with a **React.js front-end** and a **C# back-end API**, the application ensures a modern and secure experience, with **JWT-based authentication** for secure login, session management, and role-based access control.  
+Built with a **React.js front-end** and a **C# back-end API**, the application ensures a modern and secure experience, with **JWT-based authentication** for secure login, session management, and role-based access control, and **SignalR** for real-time functionalities, such as notifications.  
 
 ---
 
@@ -31,6 +31,7 @@ Built with a **React.js front-end** and a **C# back-end API**, the application e
 
 ## Features
 * JWT Authentication: Secure login and session management using JSON Web Tokens (JWT).
+* SignalR:  for real-time functionalities, such as notifications.  
 * React.js Front-End: User-friendly, responsive interface for browsing products, managing cart, and checkout.
 * RESTful API: Back-end built with C# that handles data operations and business logic.
 * CRUD Operations: Full Create, Read, Update, and Delete functionality for product management.
@@ -40,8 +41,8 @@ Built with a **React.js front-end** and a **C# back-end API**, the application e
 ---
 
 ### Technologies Used
-* Front-End: React.js, CSS, HTML
-* Back-End: C#, .NET Core, Entity Framework
+* Front-End: React.js, CSS, HTML, SignalR
+* Back-End: C#, .NET Core, Entity Framework, SignalR
 * Authentication: JSON Web Tokens (JWT)
 * Database: SQL Server
 * API: RESTful architecture for all data interactions
