@@ -37,6 +37,8 @@ function RestaurantDashboard() {
     const [message, setMessage] = useState("");
     const [sortedOrders, setSortedOrders] = useState([]);
     const [sortOrder, setSortOrder] = useState("asc"); 
+    const [activeContent, setActiveContent] = useState("");
+
 
 
     useEffect(() => {
@@ -143,7 +145,11 @@ function RestaurantDashboard() {
             }
         }
         setNewOrder((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
-        setNotification(null); // Close notification
+        setNotification(null); 
+    };
+
+    const handleItemClick = (content) => {
+        setActiveContent(content);
     };
 
     const showNotification = (orderId) => {
@@ -153,10 +159,9 @@ function RestaurantDashboard() {
 
     const fetchOrderDetails = async (orderId) => {
         try {
-            const response = await axios.get(`https://localhost:7131/api/orders/${orderId}`); // Adjust the URL if necessary
+            const response = await axios.get(`https://localhost:7131/api/orders/${orderId}`);
 
             const order = response.data;
-            // console.log(response.data);
             setNotification(response.data);
         } catch (err) {
             console.error("Failed to fetch order details:", err);
@@ -285,373 +290,408 @@ function RestaurantDashboard() {
         }
     };
 
-    return (
-        <Container className="mt-5">
-            <h1>Restaurant Dashboard</h1>
+    const contentMap = {
+        "Restaurant Details": (
+            <div>
+                <h5>Restaurant Details</h5>
+                {restaurant ? (
+                    <>
+                        <Card className="mb-4">
+                            <Card.Body>
+                                <Card.Title>{restaurant.name}</Card.Title>
+                                <Card.Text>
+                                    <strong>Address:</strong> {restaurant.address} <br />
+                                    <strong>Phone:</strong> {restaurant.phoneNumber} <br />
+                                    <strong>Description:</strong> {restaurant.description} <br />
+                                    <strong>Rating:</strong> {restaurant.rating}<br />
+                                </Card.Text>
+                                {restaurant.imageUrl && (
+                                    <Card.Img
+                                        variant="top"
+                                        style={{ maxWidth: "10%", maxHeight: "300px", objectFit: "cover" }}
+                                        src={restaurant.imageUrl}
+                                        alt="Restaurant Image"
+                                    />
+                                )}
+                            </Card.Body>
+                        </Card>
+                        <Button variant="primary" onClick={() => setShowEditRestaurantModal(true)}>
+                            Edit Restaurant
+                        </Button>
 
-            {restaurant ? (
-                <>
-                    <Card className="mb-4">
-                        <Card.Body>
-                            <Card.Title>{restaurant.name}</Card.Title>
-                            <Card.Text>
-                                <strong>Address:</strong> {restaurant.address} <br />
-                                <strong>Phone:</strong> {restaurant.phoneNumber} <br />
-                                <strong>Description:</strong> {restaurant.description} <br />
-                                <strong>Rating:</strong> {restaurant.rating}<br />
-                            </Card.Text>
-                            {restaurant.imageUrl && (
-                                <Card.Img
-                                    variant="top"
-                                    style={{ maxWidth: "10%", maxHeight: "300px", objectFit: "cover" }}
-                                    src={restaurant.imageUrl}
-                                    alt="Restaurant Image"
-                                />
-                            )}
-                        </Card.Body>
-                    </Card>
-                    <Button variant="primary" onClick={() => setShowEditRestaurantModal(true)}>
-                        Edit Restaurant
-                    </Button>
+                        {/* Products Table */}
+                        <h3 className="mt-4">Products</h3>
+                        <Button variant="secondary" onClick={() => setShowAddProductModal(true)} className="mb-3">
+                            Add Product
+                        </Button>
 
-                    {/* Products Table */}
-                    <h3 className="mt-4">Products</h3>
-                    <Button variant="secondary" onClick={() => setShowAddProductModal(true)} className="mb-3">
-                        Add Product
-                    </Button>
-
-                    <Table bordered hover responsive>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((product) => (
-                                <tr key={product.id}>
-                                    <td>{product.id}</td>
-                                    <td>{product.productName}</td>
-                                    <td>{product.description}</td>
-                                    <td>{product.price}</td>
-                                    <td>
-                                        <Button
-                                            variant="warning"
-                                            size="sm"
-                                            onClick={() => handleEditProduct(product)}
-                                        >
-                                            Edit
-                                        </Button>{" "}
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            onClick={() => handleDeleteProduct(product.id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </td>
+                        <Table bordered hover responsive>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
                                 </tr>
+                            </thead>
+                            <tbody>
+                                {products.map((product) => (
+                                    <tr key={product.id}>
+                                        <td>{product.id}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.description}</td>
+                                        <td>{product.price}</td>
+                                        <td>
+                                            <Button
+                                                variant="warning"
+                                                size="sm"
+                                                onClick={() => handleEditProduct(product)}
+                                            >
+                                                Edit
+                                            </Button>{" "}
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                onClick={() => handleDeleteProduct(product.id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+
+                        {/* Edit Product Modal */}
+                        <Modal show={showModal} onHide={() => setShowModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Edit Product</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form onSubmit={handleEditProductSubmit}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="productName"
+                                            value={productData.productName}
+                                            onChange={handleProductInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            name="description"
+                                            value={productData.description}
+                                            onChange={handleProductInputChange}
+                                            rows={3}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Price</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="price"
+                                            value={productData.price}
+                                            onChange={handleProductInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Upload Image</Form.Label>
+                                        <Form.Control type="file" onChange={handleFileChange} />
+                                    </Form.Group>
+                                    <Button type="submit" variant="primary" disabled={uploading}>
+                                        {uploading ? "Submitting..." : "Update Product"}
+                                    </Button>
+                                </Form>
+                            </Modal.Body>
+                        </Modal>
+
+                        {/* Add Product Modal */}
+                        <Modal show={showAddProductModal} onHide={() => setShowAddProductModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Add New Product</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form onSubmit={handleAddProductSubmit}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="productName"
+                                            value={productData.productName}
+                                            onChange={handleProductInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            name="description"
+                                            value={productData.description}
+                                            onChange={handleProductInputChange}
+                                            rows={3}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Price</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="price"
+                                            value={productData.price}
+                                            onChange={handleProductInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Upload Image</Form.Label>
+                                        <Form.Control type="file" onChange={handleFileChange} />
+                                    </Form.Group>
+                                    <Button type="submit" variant="primary" disabled={uploading}>
+                                        {uploading ? "Submitting..." : "Add Product"}
+                                    </Button>
+                                </Form>
+                            </Modal.Body>
+                        </Modal>
+
+                        {/* Edit Restaurant Modal */}
+                        <Modal show={showEditRestaurantModal} onHide={() => setShowEditRestaurantModal(false
+                        )}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Edit Restaurant</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Form onSubmit={handleEditRestaurantSubmit}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="name"
+                                            value={restaurantData.name}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Address</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="address"
+                                            value={restaurantData.address}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Phone Number</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="phoneNumber"
+                                            value={restaurantData.phoneNumber}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Description</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            name="description"
+                                            value={restaurantData.description}
+                                            onChange={handleInputChange}
+                                            rows={3}
+                                            required
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Upload Image</Form.Label>
+                                        <Form.Control type="file" onChange={handleFileChange} />
+                                    </Form.Group>
+                                    <Button type="submit" variant="primary" disabled={uploading}>
+                                        {uploading ? "Submitting..." : "Update Restaurant"}
+                                    </Button>
+                                </Form>
+                            </Modal.Body>
+                        </Modal>
+                    </>
+                ) : (
+                    <p>No restaurant information found. Please add your restaurant details.</p>
+                )}
+            </div>
+        ),
+        "New Orders": (
+            <div>
+                <div>
+                    <h1>New Orders</h1>
+                    {newOrder?.map((order) => (
+                        <div key={order.id}>
+                            <p>Order ID: {order.id}</p>
+                            <button onClick={() => showNotification(order.id)}>View</button>
+                        </div>
+                    ))}
+
+                    {/* Notification */}
+                    {notification && (
+                        <div
+                            style={{
+                                position: "fixed",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: 1000,
+                            }}
+                        >
+                            <div
+                                style={{
+                                    background: "white",
+                                    padding: "20px",
+                                    borderRadius: "8px",
+                                    textAlign: "center",
+                                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                                }}
+                            >
+                                <h2><strong>New Order Notification</strong></h2>
+                                <p><strong>Order ID:</strong> {notification.id}</p>
+                                <p><strong>Order Date:</strong> {notification.orderDate}</p>
+                                <p><strong>Status :</strong> {notification.status}</p>
+                                <p><strong>Total :</strong> {notification.total}</p>
+                                {notification.orderDetails.map((details, index) => (
+                                    <div key={index} style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
+                                        <img src={details.restaurantMenuModel.imageUrl} alt={details.restaurantMenuModel.productName} style={{ width: "100px", height: "auto", borderRadius: "8px" }} />
+                                        <div>
+                                            <p><strong>Product Name:</strong> {details.restaurantMenuModel.productName}</p>
+                                            <p><strong>Product Price:</strong> {details.price} RON</p>
+                                            <p><strong>Quantity:</strong> {details.quantity}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    onClick={() => handleNotificationAction(notification.id, "accepted")}
+                                    style={{
+                                        background: "green",
+                                        color: "white",
+                                        padding: "10px 20px",
+                                        margin: "10px",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Accept
+                                </button>
+                                <button
+                                    onClick={() => handleNotificationAction(notification.id, "declined")}
+                                    style={{
+                                        background: "red",
+                                        color: "white",
+                                        padding: "10px 20px",
+                                        margin: "10px",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        ),
+        "All Orders": (
+            <div>
+                <h3>All Orders</h3>
+                <Table bordered hover responsive>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Total</th>
+                            <th>
+
+                                <Button
+                                    variant="link"
+                                    onClick={handleSort}
+                                    style={{ marginLeft: "10px", padding: "0" }}
+                                >
+                                    Status
+                                </Button>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedOrders.map((order) => (
+                            <tr key={order.id}>
+                                <td>{order.id}</td>
+
+                                <td>{order.total} RON</td>
+                                <td>{order.status}</td>
+                                <td>
+                                    <Button variant="primary" size="sm">
+                                        View
+                                    </Button>{" "}
+
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
+        )
+    };
+
+
+
+    return (
+        <Container >
+            <div className="container-fluid vh-100">
+                <div className="row h-100">
+                    <div className="col-md-3 bg-light border-end" style={{ overflowY: 'auto' }}>
+                        <h4 style={{ marginTop: '20px' }}>Your Restaurant</h4>
+                        <div className="list-group">
+                            {Object.keys(contentMap).map((item) => (
+                                <a
+                                    key={item}
+                                    className={`list-group-item list-group-item-action ${activeContent === item ? 'active' : ''}`}
+                                    onClick={() => handleItemClick(item)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {item}
+                                </a>
                             ))}
-                        </tbody>
-                    </Table>
-
-                    {/* Edit Product Modal */}
-                    <Modal show={showModal} onHide={() => setShowModal(false)}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Edit Product</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Form onSubmit={handleEditProductSubmit}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="productName"
-                                        value={productData.productName}
-                                        onChange={handleProductInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Description</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        name="description"
-                                        value={productData.description}
-                                        onChange={handleProductInputChange}
-                                        rows={3}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Price</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        name="price"
-                                        value={productData.price}
-                                        onChange={handleProductInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Upload Image</Form.Label>
-                                    <Form.Control type="file" onChange={handleFileChange} />
-                                </Form.Group>
-                                <Button type="submit" variant="primary" disabled={uploading}>
-                                    {uploading ? "Submitting..." : "Update Product"}
-                                </Button>
-                            </Form>
-                        </Modal.Body>
-                    </Modal>
-
-                    {/* Add Product Modal */}
-                    <Modal show={showAddProductModal} onHide={() => setShowAddProductModal(false)}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Add New Product</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Form onSubmit={handleAddProductSubmit}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="productName"
-                                        value={productData.productName}
-                                        onChange={handleProductInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Description</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        name="description"
-                                        value={productData.description}
-                                        onChange={handleProductInputChange}
-                                        rows={3}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Price</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        name="price"
-                                        value={productData.price}
-                                        onChange={handleProductInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Upload Image</Form.Label>
-                                    <Form.Control type="file" onChange={handleFileChange} />
-                                </Form.Group>
-                                <Button type="submit" variant="primary" disabled={uploading}>
-                                    {uploading ? "Submitting..." : "Add Product"}
-                                </Button>
-                            </Form>
-                        </Modal.Body>
-                    </Modal>
-
-                    {/* Edit Restaurant Modal */}
-                    <Modal show={showEditRestaurantModal} onHide={() => setShowEditRestaurantModal(false
-                    )}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Edit Restaurant</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Form onSubmit={handleEditRestaurantSubmit}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="name"
-                                        value={restaurantData.name}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Address</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="address"
-                                        value={restaurantData.address}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Phone Number</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="phoneNumber"
-                                        value={restaurantData.phoneNumber}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Description</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        name="description"
-                                        value={restaurantData.description}
-                                        onChange={handleInputChange}
-                                        rows={3}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Upload Image</Form.Label>
-                                    <Form.Control type="file" onChange={handleFileChange} />
-                                </Form.Group>
-                                <Button type="submit" variant="primary" disabled={uploading}>
-                                    {uploading ? "Submitting..." : "Update Restaurant"}
-                                </Button>
-                            </Form>
-                        </Modal.Body>
-                    </Modal>
-                </>
-            ) : (
-                <p>No restaurant information found. Please add your restaurant details.</p>
-            )}
+                        </div>
+                    </div>
+                    <div className="col-md-9 p-4">
+                        <div className="border p-3">
+                            {activeContent ? contentMap[activeContent] : <p>Select an item to see the content.</p>}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {message && <p className="mt-3 alert alert-info">{message}</p>}
 
-            <p>New Order</p>
-            {newOrder?.map((order) => (
-                <div key={order.id}>
-                    <p>Order ID: {order.id}</p>
-               
-                    <button>Accept</button>
-                </div>
-            ))}
+           
 
-            <div>
-                <h1>New Orders</h1>
-                {newOrder?.map((order) => (
-                    <div key={order.id}>
-                        <p>Order ID: {order.id}</p>
-                        <button onClick={() => showNotification(order.id)}>View</button>
-                    </div>
-                ))}
-
-                {/* Notification */}
-                {notification && (
-                    <div
-                        style={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1000,
-                        }}
-                    >
-                        <div
-                            style={{
-                                background: "white",
-                                padding: "20px",
-                                borderRadius: "8px",
-                                textAlign: "center",
-                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                            }}
-                        >
-                            <h2><strong>New Order Notification</strong></h2>
-                            <p><strong>Order ID:</strong> {notification.id}</p>
-                            <p><strong>Order Date:</strong> {notification.orderDate}</p>
-                            <p><strong>Status :</strong> {notification.status}</p>
-                            <p><strong>Total :</strong> {notification.total}</p>
-                            {notification.orderDetails.map((details, index) => (
-                                <div key={index} style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
-                                    <img src={details.restaurantMenuModel.imageUrl} alt={details.restaurantMenuModel.productName} style={{ width: "100px", height: "auto", borderRadius: "8px" }} />
-                                    <div>
-                                        <p><strong>Product Name:</strong> {details.restaurantMenuModel.productName}</p>
-                                        <p><strong>Product Price:</strong> {details.price} RON</p>
-                                        <p><strong>Quantity:</strong> {details.quantity}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            <button
-                                onClick={() => handleNotificationAction(notification.id, "accepted")}
-                                style={{
-                                    background: "green",
-                                    color: "white",
-                                    padding: "10px 20px",
-                                    margin: "10px",
-                                    border: "none",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Accept
-                            </button>
-                            <button
-                                onClick={() => handleNotificationAction(notification.id, "declined")}
-                                style={{
-                                    background: "red",
-                                    color: "white",
-                                    padding: "10px 20px",
-                                    margin: "10px",
-                                    border: "none",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Decline
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
+            
 
 
 
 
-            <h3>All Orders</h3>
-            <Table bordered hover responsive>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Total</th>
-                        <th>
-                            
-                            <Button
-                                variant="link"
-                                onClick={handleSort}
-                                style={{ marginLeft: "10px", padding: "0" }}
-                            >
-                                Status
-                            </Button>
-                        </th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortedOrders.map((order) => (
-                        <tr key={order.id}>
-                            <td>{order.id}</td>
-                            
-                            <td>{order.total} RON</td>
-                            <td>{order.status}</td>
-                            <td>
-                                <Button variant="primary" size="sm">
-                                    View
-                                </Button>{" "}
-                               
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
+            
         </Container>
     );
 }

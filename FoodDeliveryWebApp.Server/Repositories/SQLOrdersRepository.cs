@@ -27,10 +27,7 @@ namespace FoodDeliveryWebApp.Server.Repositories
 
         public async Task<IEnumerable<Orders>> GetAll(string? applicationUserId, string? restaurantId)
         {
-            var query = _db.Orders.Include(o => o.RestaurantModel)
-                                  .Include(o => o.OrderDetails)
-                                    .ThenInclude(od => od.RestaurantMenuModel)
-                                  .AsQueryable();
+            var query = _db.Orders.AsQueryable();
             if (!string.IsNullOrWhiteSpace(applicationUserId))
             {
                 query = query.Where(x => x.UserId == applicationUserId);
@@ -39,7 +36,10 @@ namespace FoodDeliveryWebApp.Server.Repositories
             {
                 query = query.Where(x => x.RestaurantId.ToString() == restaurantId);
             }
-            return await _db.Orders.ToListAsync();
+            return await _db.Orders.Include(o => o.RestaurantModel)
+                                  .Include(o => o.OrderDetails)
+                                    .ThenInclude(od => od.RestaurantMenuModel)
+                                    .ToListAsync();
         }
 
         public async Task<Orders> GetByIdAsync(Guid id)

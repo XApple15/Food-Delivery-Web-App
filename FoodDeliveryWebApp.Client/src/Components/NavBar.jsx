@@ -33,7 +33,7 @@ function NavBar() {
     };
 
     const renderRoleSpecificButtons = () => {
-        console.log("User Role:", role); // Debug
+       // console.log("User Role:", role); // Debug
 
         if (role === 'Admin') {
             return (

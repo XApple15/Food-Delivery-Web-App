@@ -37,13 +37,13 @@ function CheckOutPage() {
 
             for (const item of cartItems) {
                 const orderData = {
-                    restaurantMenuId: item.id, // Adjust keys based on your cart item structure
+                    restaurantMenuId: item.id,
                     quantity: item.quantity,
                     price: item.price,
-                    orderId : fetchedOrderId, // Replace or fetch dynamically
+                    orderId : fetchedOrderId, 
                 };
                 console.log(orderData);
-                // Send Axios request for each cart item
+             
                 const response = await axios.post("https://localhost:7131/api/orderdetails", orderData);
                 console.log(`Order created for item ${item.id}:`, response.data);
             }
@@ -62,7 +62,8 @@ function CheckOutPage() {
             <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Check Out</h1>
             <div style={{ marginBottom: "20px", marginLeft: "25vh", marginRight: "25vh" }}>
                 {cartItems.map((item) => (
-                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
+                    <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+                    marginBottom: "10px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
                         <div style={{ display: "flex", alignItems: "center", marginRight: "20px" }}>
                             <img src={item.imageUrl} alt={item.title} style={{ width: "120px", height: "120px", marginRight: "10px" }} />
                             <div>

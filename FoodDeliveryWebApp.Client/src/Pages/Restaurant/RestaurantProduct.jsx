@@ -44,7 +44,6 @@ function RestaurantProduct() {
                 </div>
                 <div className="col-md-6">
                     <h1 className="display-4">{product.productName}</h1>
-                    {/*<p className="lead">{product.description}</p>*/}
                     <h4 className="text-success">RON {product.price}</h4>
                     <div className="mt-4">
                         <button className="btn btn-primary btn-lg" onClick={() => { addToCart(product) }}>
