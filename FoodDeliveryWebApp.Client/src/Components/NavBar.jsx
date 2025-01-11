@@ -13,6 +13,8 @@ function NavBar() {
     const { user, logout, role } = useAuth();
     const navigate = useNavigate();
 
+    
+
     const toggle = () => {
         setshowModal(!showModal);
     };
@@ -33,8 +35,8 @@ function NavBar() {
     };
 
     const renderRoleSpecificButtons = () => {
-       // console.log("User Role:", role); // Debug
-
+        console.log("User Role:", role); 
+        
         if (role === 'Admin') {
             return (
                 <div>
@@ -52,6 +54,7 @@ function NavBar() {
         return null;
     };
 
+ 
 
     return (
         <div>       

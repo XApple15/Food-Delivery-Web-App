@@ -30,6 +30,9 @@ namespace FoodDeliveryWebApp.Server.Controllers
 
 
 
+
+
+
         [HttpPut("{orderId}/acceptOrderByRestaurant" )]
         public async Task<IActionResult> AcceptOrderByRestaurant(Guid orderId)
         {
@@ -42,18 +45,45 @@ namespace FoodDeliveryWebApp.Server.Controllers
             if(newOrder != null) {
                 return Ok(order);
             }
+            // send delivery to courier
             return NotFound();
         }
 
+
+        [HttpPut("{orderId}/orderDoneRestaurant")]
+        public async Task<IActionResult> OrderDoneRestaurant(Guid orderId)
+        {
+            var order = new UpdateOrderDTO
+            {
+                Status = "OrderDoneRestaurant"
+            };
+
+            var newOrder = await _ordersRepository.UpdateOrder(orderId, order);
+            if (newOrder != null)
+            {
+                await _hubContext.Clients.Group("Couriers").SendAsync("ReceiveOrderToAccept", orderId);
+                return Ok(order);
+            }
+            return NotFound();
+        }
+
+
+
         [HttpPut("{orderId}/acceptOrderByCourier")]
-        public async Task<IActionResult> AcceptOrderByCourier(Guid orderId)
+        public async Task<IActionResult> AcceptOrderByCourier(Guid orderId,string courierId)
         {
             var order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
                 return NotFound();
             }
+            else if(order.CourierId != null)
+            {
+                return BadRequest("Order already accepted by another courier");
+            }
             order.Status = "AcceptedByCourier";
+            order.CourierId = courierId;
+
             await _ordersRepository.UpdateOrder(orderId, _mapper.Map<UpdateOrderDTO>(order));
             return Ok(order);
         }
@@ -73,10 +103,10 @@ namespace FoodDeliveryWebApp.Server.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? applicationUserId, [FromQuery] string? restaurantId)
+        public async Task<IActionResult> GetAll([FromQuery] string? applicationUserId, [FromQuery] string? restaurantId, [FromQuery] string? courierId)
         {
 
-        var orders = await _ordersRepository.GetAll(applicationUserId,restaurantId);
+        var orders = await _ordersRepository.GetAll(applicationUserId,restaurantId,courierId);
             var orderDTO = _mapper.Map<List<OrderDTO>>(orders);
             return Ok(orderDTO);
         }
@@ -103,8 +133,10 @@ namespace FoodDeliveryWebApp.Server.Controllers
             order.OrderDate = DateTime.Now;
             order.Status = "Pending";
             await _ordersRepository.Create(order);
-            await _hubContext.Clients.Group(order.RestaurantId.ToString()).SendAsync("ReceiveOrder", order.Id.ToString());
-                 
+           // await _hubContext.Clients.Group(order.RestaurantId.ToString()).SendAsync("ReceiveOrder", order.Id.ToString());
+
+            await _hubContext.Clients.Group($"Restaurant-{order.RestaurantId.ToString()}").SendAsync("ReceiveOrder", order.Id.ToString() );
+
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
 

@@ -250,6 +250,7 @@ function AdminRestaurantDashboard() {
                 imageUrl = uploadResponse.data.filePath;
             }
             newMenuItem.imageUrl = imageUrl;
+            console.log(newMenuItem);
 
             newMenuItem.restaurantId = selectedRestaurant.id;
             const response = await axios.post("https://localhost:7131/api/restaurantmenu", newMenuItem);

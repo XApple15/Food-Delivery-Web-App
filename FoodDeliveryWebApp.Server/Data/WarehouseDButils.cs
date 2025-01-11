@@ -64,29 +64,29 @@ namespace FoodDeliveryWebApp.API.Data
                 .HasOne(o => o.UserModel)       
                 .WithMany()
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+                .OnDelete(DeleteBehavior.NoAction); 
 
             modelBuilder.Entity<Orders>()
                 .HasOne(o => o.RestaurantModel)
                 .WithMany()
                 .HasForeignKey(o => o.RestaurantId)
-                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+                .OnDelete(DeleteBehavior.NoAction); 
 
-            // If you decide to add CourierModel navigation property
+          
             modelBuilder.Entity<Orders>()
                 .HasOne(o => o.CourierModel)
                 .WithMany()
                 .HasForeignKey(o => o.CourierId)
-                .IsRequired(false) // Make the relationship optional
-                .OnDelete(DeleteBehavior.NoAction); // Configure OnDelete behavior
+                .IsRequired(false) 
+                .OnDelete(DeleteBehavior.NoAction); 
             modelBuilder.Entity<Restaurant>()
                 .HasOne(o => o.ApplicationUserModel)
                 .WithMany()
                 .HasForeignKey(o => o.ApplicationUserId);
             modelBuilder.Entity<OrderDetails>()
-                .HasOne(od => od.OrderModel)   // Navigation property
-                .WithMany(o => o.OrderDetails) // Assume Orders has a collection of OrderDetails
-                .HasForeignKey(od => od.OrderId); // Explicit FK
+                .HasOne(od => od.OrderModel)   
+                .WithMany(o => o.OrderDetails)
+                .HasForeignKey(od => od.OrderId);
             modelBuilder.Entity<OrderDetails>()
                 .HasOne(od=> od.RestaurantMenuModel)
                 .WithMany()

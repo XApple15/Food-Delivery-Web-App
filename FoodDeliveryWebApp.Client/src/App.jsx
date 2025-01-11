@@ -20,7 +20,8 @@ import RestaurantDashboard from "./Pages/Restaurant/ManageRestaurant/RestaurantD
 import AdminUserDashboard from "./Pages/Admin/AdminUserDashboard";
 import AdminRestaurantDashboard from "./Pages/Admin/AdminRestaurantDashboard";
 import CheckOutPage from "./Pages/Client/CheckOutPage";
-
+import CourierLogin from "./Pages/Courier/CourierLogin";
+import CourierDashbord from "./Pages/Courier/CourierDashboard";
 
 function App() {
     return (
@@ -41,12 +42,11 @@ function App() {
                     <Route path="/admin" element={<AdminLogin />} />
                     <Route path="/upload" element={<ImageUpload />} /> 
                     <Route path="/restaurant/login" element={<RestaurantLogin />} />
+                    <Route path="/courier/login" element={<CourierLogin />} /> 
 
                     <Route element={<PrivateRoute allowedRoles={['Restaurant']} />}>
                         <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} /> 
                     </Route>
-
-                    
 
                     <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
                         <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -58,7 +58,11 @@ function App() {
                         <Route path="/account" element={<MyClientAccount />} />
                         <Route path="/check-out" element={<CheckOutPage />} />
                     </Route>
-                   
+
+                    <Route element={<PrivateRoute allowedRoles={['Courier']} />}>
+                        <Route path="/courier/dashboard" element={<CourierDashbord />} />
+                    </Route>
+
                     <Route path="*" element={<NotFound />} />
                 </Routes>
                 <br />

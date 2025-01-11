@@ -13,6 +13,7 @@ namespace FoodDeliveryWebApp.API.Mappings
             CreateMap<ApplicationUser, UserDTO>().ReverseMap();
             CreateMap<Restaurant, RestaurantDTO>().ReverseMap();
             CreateMap<RestaurantMenu, RestaurantMenuDTO>().ReverseMap();
+            CreateMap<RestaurantMenu, AddRestaurantMenuDTO>().ReverseMap();
             CreateMap<RestaurantDTO, AddRestaurantDTO>().ReverseMap();
             CreateMap<Restaurant, AddRestaurantDTO>().ReverseMap();
             CreateMap<Orders, OrderDTO>().ReverseMap();
@@ -21,6 +22,8 @@ namespace FoodDeliveryWebApp.API.Mappings
             CreateMap<OrderDetails, OrderDetailsDTO>().ReverseMap();
             CreateMap<OrderDetails, AddOrderDetailsDTO>().ReverseMap();
             CreateMap<OrderDetailsDTO, AddOrderDetailsDTO>().ReverseMap();
+            CreateMap<UpdateOrderDTO, OrderDTO>().ReverseMap();
+            CreateMap<UpdateOrderDTO, Orders>().ReverseMap();
         }
     }
 }

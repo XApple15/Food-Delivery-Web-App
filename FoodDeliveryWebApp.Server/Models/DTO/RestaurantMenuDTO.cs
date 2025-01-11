@@ -11,6 +11,6 @@ namespace FoodDeliveryWebApp.Server.Models.DTO
         public string? ImageUrl { get; set; }
         public Guid RestaurantId { get; set; }
 
-        public ICollection<OrderDetails> OrderDetails { get; set; }
+        public ICollection<OrderDetails>? OrderDetails { get; set; }
     }
 }

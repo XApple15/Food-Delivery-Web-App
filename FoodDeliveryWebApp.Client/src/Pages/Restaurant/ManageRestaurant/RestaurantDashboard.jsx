@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Form, Button, Container, Card, Table, Modal } from "react-bootstrap";
+import { Form, Button, Container, Card, Table, Modal,Toast } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "../../../Context/AuthContext";
 import connection from "../../../Context/SignalR";
@@ -34,12 +34,14 @@ function RestaurantDashboard() {
     });
     const [imageFile, setImageFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-    const [message, setMessage] = useState("");
     const [sortedOrders, setSortedOrders] = useState([]);
     const [sortOrder, setSortOrder] = useState("asc"); 
     const [activeContent, setActiveContent] = useState("");
-
-
+    const [showModalOrderDetails, setShowModalOrderDetails] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [orderDetailsModified, setOrderDetailsModified] = useState(null);
+    const [toastMessage, setToastMessage] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         const fetchRestaurant = async () => {
@@ -48,6 +50,7 @@ function RestaurantDashboard() {
                 const restaurant = response.data[0];
                 setRestaurant(restaurant);
                 setProductData({ ...productData, restaurantId: restaurant?.id });
+                console.log(restaurant);
                 if (restaurant) {
                     setRestaurantData({
                         name: restaurant.name,
@@ -70,6 +73,7 @@ function RestaurantDashboard() {
             try {
                 const response = await axios.get(`https://localhost:7131/api/restaurantmenu?restaurantid=${restaurantId}`);
                 setProducts(response.data || []);
+                console.log(response.data);
             } catch (error) {
                 console.error("Failed to fetch products", error);
             }
@@ -104,16 +108,19 @@ function RestaurantDashboard() {
         connectToHub();
     }, [fetchedRestaurantId]);
 
+
+    const fetchAllOrders = async () => {
+        try {
+            const response = await axios.get(`https://localhost:7131/api/orders?restaurantId=${fetchedRestaurantId}`);
+            console.log("All Orders:", response.data);
+            setSortedOrders(response.data);
+        } catch (err) {
+            console.error("Error fetching all orders:", err);
+        }
+    };
+
     useEffect(() => {
-        const fetchAllOrders = async () => {
-            try {
-                const response = await axios.get(`https://localhost:7131/api/orders?restaurantId=${fetchedRestaurantId}`);
-                console.log("All Orders:", response.data);
-                setSortedOrders(response.data);
-            } catch (err) {
-                console.error("Error fetching all orders:", err);
-            }
-        };
+        
 
         if (fetchedRestaurantId) {
             fetchAllOrders();
@@ -133,9 +140,9 @@ function RestaurantDashboard() {
         setSortOrder(sortOrder === "asc" ? "desc" : "asc"); 
     };
 
-    const handleNotificationAction =  async (orderId, action) => {
+    const handleChangeOrderStatus =  async (orderId, action) => {
         console.log(`Order ${orderId} ${action}`);
-        if (action === "accepted") {
+        if (action === "AcceptedByRestaurant") {
             try {
                 const response = await axios.put(`https://localhost:7131/api/orders/${orderId}/acceptOrderByRestaurant`);
                 console.log("Order status updated successfully:", response.data);
@@ -143,9 +150,22 @@ function RestaurantDashboard() {
             catch (err) {
                 console.error("Failed to update order status:", err);
             }
+            setNewOrder((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+            setNotification(null); 
         }
-        setNewOrder((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
-        setNotification(null); 
+        else if (action === "OrderDoneRestaurant") {
+            try {
+                const response = await axios.put(`https://localhost:7131/api/orders/${orderId}/orderDoneRestaurant`);
+                console.log("Order status updated successfully:", response.data);
+                handleCloseModalOrderDetails();
+                fetchAllOrders();
+            }
+            catch (err) {
+                console.error("Failed to update order status:", err);
+            }
+        }
+        
+       
     };
 
     const handleItemClick = (content) => {
@@ -182,6 +202,18 @@ function RestaurantDashboard() {
         setImageFile(e.target.files[0]);
     };
 
+    const handleRowClickOrderDetails = (order) => {
+        setSelectedOrder(order);
+       
+        setShowModalOrderDetails(true);
+    };
+
+    const handleCloseModalOrderDetails = () => {
+        setShowModalOrderDetails(false);
+        setSelectedOrder(null);
+    };
+
+
     const handleEditRestaurantSubmit = async (e) => {
         e.preventDefault();
 
@@ -201,12 +233,19 @@ function RestaurantDashboard() {
             const updatedRestaurant = { ...restaurantData, imageUrl };
             const response = await axios.put(`https://localhost:7131/api/restaurant/${restaurant.id}`, updatedRestaurant);
             setRestaurant(response.data);
-            setMessage("Restaurant updated successfully!");
+            triggerToast("Restaurant updated successfully!");
             setShowEditRestaurantModal(false);
         } catch (error) {
             console.error("Failed to update restaurant", error);
-            setMessage("Failed to update restaurant.");
+            triggerToast("Failed to update restaurant.");
         }
+    };
+
+
+    const triggerToast = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     const handleAddProductSubmit = async (e) => {
@@ -232,7 +271,7 @@ function RestaurantDashboard() {
 
             const response = await axios.post("https://localhost:7131/api/restaurantmenu", newProduct);
             setProducts([...products, response.data]);
-            setMessage("Product added successfully!");
+            triggerToast("Product added successfully!");
             setShowAddProductModal(false);
             setProductData({
                 productName: "",
@@ -243,7 +282,7 @@ function RestaurantDashboard() {
             });
         } catch (error) {
             console.error("Failed to add product", error);
-            setMessage("Failed to add product.");
+            triggerToast("Failed to add product.");
         }
     };
 
@@ -267,14 +306,15 @@ function RestaurantDashboard() {
                 });
                 updatedProduct.imageUrl = uploadResponse.data.filePath;
             }
+            console.log(updatedProduct);
 
             const response = await axios.put(`https://localhost:7131/api/restaurantmenu/${productData.id}`, updatedProduct);
             setProducts(products.map((p) => (p.id === productData.id ? response.data : p)));
-            setMessage("Product updated successfully!");
+            triggerToast("Product updated successfully!");
             setShowModal(false);
         } catch (error) {
             console.error("Failed to update product", error);
-            setMessage("Failed to update product.");
+            triggerToast("Failed to update product.");
         }
     };
 
@@ -283,12 +323,113 @@ function RestaurantDashboard() {
             try {
                 await axios.delete(`https://localhost:7131/api/restaurantmenu/${productId}`);
                 setProducts(products.filter((product) => product.id !== productId));
-                setMessage("Product deleted successfully!");
+                triggerToast("Product deleted successfully!");
             } catch (error) {
                 console.error("Failed to delete product", error);
             }
         }
     };
+
+    const renderOrdersTable = (orderTypes) => {
+        let filteredOrders = sortedOrders;
+        if (orderTypes === "AcceptedByRestaurant") {
+            filteredOrders = sortedOrders.filter((order) => order.status === "AcceptedByRestaurant");
+        }
+
+        return (
+            <div>
+                <h3>{orderTypes} Orders</h3>
+                <Table bordered hover responsive>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Total</th>
+                            <th>
+
+                                <Button
+                                    variant="link"
+                                    onClick={handleSort}
+                                    style={{ marginLeft: "10px", padding: "0" }}
+                                >
+                                    Status
+                                </Button>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredOrders.map((order) => (
+                            <tr key={order.id}>
+                                <td>{order.id}</td>
+                                <td>{order.total} RON</td>
+                                <td>{order.status}</td>
+                                <td>
+                                    <Button
+                                        variant="primary"
+                                        size="sm"
+                                        onClick={() => handleRowClickOrderDetails(order)}
+                                    >
+                                        View
+                                    </Button>{" "}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+
+
+                {selectedOrder && (
+                    <Modal
+                        show={showModalOrderDetails}
+                        onHide={handleCloseModalOrderDetails}
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title>Order Details</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
+                            <p><strong>Status:</strong> {selectedOrder.status}</p>
+                            <p><strong>Total:</strong> {selectedOrder.total}</p>
+                            <p><strong>Order Date:</strong>{new Date(selectedOrder.orderDate).toLocaleString()}</p>
+                            <h5>Order Items</h5>
+                            {selectedOrder.orderDetails.map((details, index) => (
+                                <div key={index} style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
+                                    <img
+                                        src={details.restaurantMenuModel.imageUrl}
+                                        alt={details.restaurantMenuModel.productName}
+                                        style={{ width: "100px", height: "auto", borderRadius: "8px" }}
+                                    />
+                                    <div>
+                                        <p><strong>Product Name:</strong> {details.restaurantMenuModel.productName}</p>
+                                        <p><strong>Price:</strong> {details.price} RON</p>
+                                        <p><strong>Quantity:</strong> {details.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            {orderTypes === "AcceptedByRestaurant" && ( 
+
+                                <Button
+                                    variant="success"
+                                    onClick={() => handleChangeOrderStatus(selectedOrder.id, "OrderDoneRestaurant")}
+                                >
+                                Done Order
+                            </Button>
+                            )}
+                            <Button
+                                variant="secondary"
+                                onClick={handleCloseModalOrderDetails}
+                            >
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                )}
+            </div>
+        );
+
+    }
 
     const contentMap = {
         "Restaurant Details": (
@@ -528,131 +669,98 @@ function RestaurantDashboard() {
         ),
         "New Orders": (
             <div>
-                <div>
-                    <h1>New Orders</h1>
-                    {newOrder?.map((order) => (
-                        <div key={order.id}>
-                            <p>Order ID: {order.id}</p>
-                            <button onClick={() => showNotification(order.id)}>View</button>
-                        </div>
-                    ))}
+                <h1>New Orders</h1>
+                {newOrder?.map((order) => (
+                    <div key={order.id}>
+                        <p>Order ID: {order.id}</p>
+                        <button onClick={() => showNotification(order.id)}>View</button>
+                    </div>
+                ))}
 
-                    {/* Notification */}
-                    {notification && (
+                {/* Notification */}
+                {notification && (
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            zIndex: 1000,
+                        }}
+                    >
                         <div
                             style={{
-                                position: "fixed",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                zIndex: 1000,
+                                background: "white",
+                                padding: "20px",
+                                borderRadius: "8px",
+                                textAlign: "center",
+                                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                             }}
                         >
-                            <div
+                            <h2><strong>New Order Notification</strong></h2>
+                            <p><strong>Order ID:</strong> {notification.id}</p>
+                            <p><strong>Order Date:</strong>{new Date(notification.orderDate).toLocaleString()}</p>
+                            <p><strong>Status :</strong> {notification.status}</p>
+                            <p><strong>Total :</strong> {notification.total}</p>
+                            {notification.orderDetails.map((details, index) => (
+                                <div key={index} style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
+                                    <img src={details.restaurantMenuModel.imageUrl} alt={details.restaurantMenuModel.productName} style={{ width: "100px", height: "auto", borderRadius: "8px" }} />
+                                    <div>
+                                        <p><strong>Product Name:</strong> {details.restaurantMenuModel.productName}</p>
+                                        <p><strong>Product Price:</strong> {details.price} RON</p>
+                                        <p><strong>Quantity:</strong> {details.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                onClick={() => handleChangeOrderStatus(notification.id,"AcceptedByRestaurant")}
                                 style={{
-                                    background: "white",
-                                    padding: "20px",
-                                    borderRadius: "8px",
-                                    textAlign: "center",
-                                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                                    background: "green",
+                                    color: "white",
+                                    padding: "10px 20px",
+                                    margin: "10px",
+                                    border: "none",
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
                                 }}
                             >
-                                <h2><strong>New Order Notification</strong></h2>
-                                <p><strong>Order ID:</strong> {notification.id}</p>
-                                <p><strong>Order Date:</strong> {notification.orderDate}</p>
-                                <p><strong>Status :</strong> {notification.status}</p>
-                                <p><strong>Total :</strong> {notification.total}</p>
-                                {notification.orderDetails.map((details, index) => (
-                                    <div key={index} style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
-                                        <img src={details.restaurantMenuModel.imageUrl} alt={details.restaurantMenuModel.productName} style={{ width: "100px", height: "auto", borderRadius: "8px" }} />
-                                        <div>
-                                            <p><strong>Product Name:</strong> {details.restaurantMenuModel.productName}</p>
-                                            <p><strong>Product Price:</strong> {details.price} RON</p>
-                                            <p><strong>Quantity:</strong> {details.quantity}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                                <button
-                                    onClick={() => handleNotificationAction(notification.id, "accepted")}
-                                    style={{
-                                        background: "green",
-                                        color: "white",
-                                        padding: "10px 20px",
-                                        margin: "10px",
-                                        border: "none",
-                                        borderRadius: "5px",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    Accept
-                                </button>
-                                <button
-                                    onClick={() => handleNotificationAction(notification.id, "declined")}
-                                    style={{
-                                        background: "red",
-                                        color: "white",
-                                        padding: "10px 20px",
-                                        margin: "10px",
-                                        border: "none",
-                                        borderRadius: "5px",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    Decline
-                                </button>
-                            </div>
+                                Accept
+                            </button>
+                            <button
+                                onClick={() => handleNotificationAction(notification.id, "declined")}
+                                style={{
+                                    background: "red",
+                                    color: "white",
+                                    padding: "10px 20px",
+                                    margin: "10px",
+                                    border: "none",
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Decline
+                            </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )} 
+            </div>
+        ),
+        "Active Orders": (
+            <div>
+                {renderOrdersTable("AcceptedByRestaurant")}
             </div>
         ),
         "All Orders": (
             <div>
-                <h3>All Orders</h3>
-                <Table bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Total</th>
-                            <th>
-
-                                <Button
-                                    variant="link"
-                                    onClick={handleSort}
-                                    style={{ marginLeft: "10px", padding: "0" }}
-                                >
-                                    Status
-                                </Button>
-                            </th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedOrders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-
-                                <td>{order.total} RON</td>
-                                <td>{order.status}</td>
-                                <td>
-                                    <Button variant="primary" size="sm">
-                                        View
-                                    </Button>{" "}
-
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                {renderOrdersTable("All")}
             </div>
         )
     };
-
 
 
     return (
@@ -681,17 +789,13 @@ function RestaurantDashboard() {
                     </div>
                 </div>
             </div>
-
-            {message && <p className="mt-3 alert alert-info">{message}</p>}
-
-           
-
-            
-
-
-
-
-            
+            <Toast
+                show={showToast}
+                onClose={() => setShowToast(false)}
+                style={{ position: "fixed", bottom: "10px", right: "10px" }}
+            >
+                <Toast.Body>{toastMessage}</Toast.Body>
+            </Toast>
         </Container>
     );
 }

@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(decoded);
                 setUserId(decoded.id);
                 setRole(decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
-                console.log(user);
+                console.log(decoded);
             }
         }
         setLoading(false);

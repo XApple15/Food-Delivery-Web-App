@@ -2,15 +2,17 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
-// preventing unauthorized access to certain pages
-
 const PrivateRoute = ({ allowedRoles }) => {
-    const user = useAuth();
-   
-    if (!user.token) return <Navigate to="/" />;
-    if (!allowedRoles.includes(user.role)) {
+    const { token, role } = useAuth(); 
+
+    if (!token) {
+        return <Navigate to="/" />;
+    }
+
+    if (!allowedRoles.includes(role)) {
         return <Navigate to="/unauthorized" />;
-    }   
+    }
+
     return <Outlet />;
 };
 
