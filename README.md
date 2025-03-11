@@ -10,21 +10,37 @@ Built with a **React.js front-end** and a **C# back-end API**, the application e
 
 ## Key Features  
 
-### Admin  
+## Admin  
 - Manage users, Restaurants and Menus and oversee system-wide operations.  
-- Perform CRUD operations on products, users and restaurants.  
+- Perform CRUD operations on products, users and restaurants.
+  
+![Screenshot 2025-01-13 020119](https://github.com/user-attachments/assets/287eaebe-2db8-4bcb-b718-9184fabc8584)
 
-### Client  
+
+## Client  
 - Browse menus and manage their shopping cart.  
-- Place orders and track delivery status.  
+- Place orders and track delivery status.
+  
+![Screenshot 2025-01-13 014236](https://github.com/user-attachments/assets/fce4bfc3-74ac-43a3-b800-e81a43e1300e)
 
-### Restaurant  
+## Restaurant  
 - Add and update menu items.  
-- Manage incoming orders and handle availability.  
+- Manage incoming orders and handle availability.
 
-### Courier  
+![Screenshot 2025-01-13 015501](https://github.com/user-attachments/assets/fc6eb917-eb20-48d2-b5ce-5a74e7ac52ed)
+
+
+![Screenshot 2025-01-13 014513](https://github.com/user-attachments/assets/90b32cc6-b229-49f2-b96a-7c6c9b9d4f3a)
+
+
+
+
+## Courier  
 - View and accept delivery assignments.  
-- Update delivery status and confirm order completions.  
+- Update delivery status and confirm order completions.
+
+  
+![Screenshot 2025-01-13 014712](https://github.com/user-attachments/assets/9b4a67e7-62d0-475b-a8a0-1469af5b273a)
 
 ---
 
@@ -46,4 +62,3 @@ Built with a **React.js front-end** and a **C# back-end API**, the application e
 * Authentication: JSON Web Tokens (JWT)
 * Database: SQL Server
 * API: RESTful architecture for all data interactions
-!!! Project not finished
